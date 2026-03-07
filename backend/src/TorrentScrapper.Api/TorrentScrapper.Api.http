@@ -1,0 +1,6 @@
+@TorrentScrapper.Api_HostAddress = http://localhost:5210
+
+GET {{TorrentScrapper.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

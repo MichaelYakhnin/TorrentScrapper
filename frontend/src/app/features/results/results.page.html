@@ -1,0 +1,104 @@
+<div class="results-container">
+  <div class="controls">
+    <mat-form-field appearance="outline">
+      <mat-label>Select Torrent Site</mat-label>
+      <mat-select [value]="vm.site()" (selectionChange)="onSiteChange($event.value)">
+        @for (site of sites; track site) {
+          <mat-option [value]="site">{{ site }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (vm.categoriesLoading()) {
+      <mat-spinner diameter="30"></mat-spinner>
+    }
+
+    @if (!vm.categoriesLoading() && vm.categories().length > 0) {
+      <mat-form-field appearance="outline">
+        <mat-label>Select Category</mat-label>
+        <mat-select
+          [value]="vm.selectedCategory()"
+          (selectionChange)="onCategoryChange($event.value)"
+          [compareWith]="compareCategories">
+          @for (category of vm.categories(); track category.id) {
+            <mat-option [value]="category">{{ category.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="onLoadClick()"
+        [disabled]="!vm.selectedCategory() || vm.loading()">
+        <mat-icon>search</mat-icon>
+        Load
+      </button>
+    }
+  </div>
+
+  @if (vm.loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Loading torrents...</p>
+    </div>
+  }
+
+  @if (vm.error()) {
+    <div class="error-container">
+      <mat-card appearance="outlined" class="error-card">
+        <mat-card-content>
+          <div class="error-content">
+            <mat-icon color="warn">error</mat-icon>
+            <p>{{ vm.error() }}</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  @if (!vm.loading() && !vm.error() && vm.torrents().length > 0) {
+    <div class="torrents-grid">
+      @for (torrent of vm.torrents(); track torrent.torrentPageUrl) {
+        <mat-card appearance="outlined" class="torrent-card">
+          <mat-card-header>
+            <mat-card-title>{{ torrent.name }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (torrent.imageUrl) {
+              <img [src]="torrent.imageUrl" [alt]="torrent.name" class="torrent-image" />
+            }
+          </mat-card-content>
+          <mat-card-actions>
+            <button 
+              mat-raised-button 
+              color="primary"
+              (click)="openTorrentPage(torrent.torrentPageUrl)">
+              <mat-icon>open_in_new</mat-icon>
+              Open Torrent Page
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+
+    <mat-paginator
+      [length]="1000"
+      [pageSize]="vm.torrents().length"
+      [pageIndex]="vm.page() - 1"
+      [hidePageSize]="true"
+      (page)="onPageChange($event)"
+      aria-label="Select page">
+    </mat-paginator>
+  }
+
+  @if (!vm.loading() && !vm.error() && vm.torrents().length === 0) {
+    <div class="empty-container">
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <p>No torrents found for this page.</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

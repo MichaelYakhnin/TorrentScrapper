@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TorrentScrapper.Api/TorrentScrapper.Api.csproj" />
+    <Project Path="src/TorrentScrapper.Application/TorrentScrapper.Application.csproj" />
+    <Project Path="src/TorrentScrapper.Infrastructure/TorrentScrapper.Infrastructure.csproj" />
+    <Project Path="src/TorrentScrapper.Parsing/TorrentScrapper.Parsing.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TorrentScrapper.Tests.Integration/TorrentScrapper.Tests.Integration.csproj" />
+    <Project Path="tests/TorrentScrapper.Tests.Unit/TorrentScrapper.Tests.Unit.csproj" />
+  </Folder>
+</Solution>

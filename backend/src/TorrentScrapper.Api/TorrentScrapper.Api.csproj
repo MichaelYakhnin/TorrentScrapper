@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TorrentScrapper.Application\TorrentScrapper.Application.csproj" />
+    <ProjectReference Include="..\TorrentScrapper.Infrastructure\TorrentScrapper.Infrastructure.csproj" />
+    <ProjectReference Include="..\TorrentScrapper.Parsing\TorrentScrapper.Parsing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TorrentScrapper.Tests.Integration" />
+    <InternalsVisibleTo Include="TorrentScrapper.Tests.Unit" />
+  </ItemGroup>
+
+</Project>
