@@ -1,0 +1,10 @@
+bin
+obj
+**/*.user
+**/*.vs
+**/TestResults
+*.md
+.vscode
+.git
+*.suo
+*.userosscache

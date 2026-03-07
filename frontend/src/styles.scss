@@ -1,39 +1,106 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
-@use '@angular/material' as mat;
+/* Runtime CSS-variable theming (no Angular Material SASS API) */
 
-html {
-  height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
+/* Theme variables scoped under root classes */
+:root.theme-light {
+  --bg: #ffffff;
+  --text: #111827;
+  --card: #f8fafc;
+  --primary: #3f51b5; /* Indigo */
+  --accent: #2196f3;  /* Blue */
+  color-scheme: light;
 }
 
+:root.theme-dark {
+  --bg: #0b1220;
+  --text: #e6eef8;
+  --card: #081226;
+  --primary: #9fa8da; /* light indigo */
+  --accent: #90caf9;  /* light blue */
+  color-scheme: dark;
+}
+
+html, body { height: 100%; }
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
+  background-color: var(--bg);
+  color: var(--text);
   margin: 0;
   height: 100%;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
 }
-/* You can add global styles to this file, and also import other style files */
+
+/* App header and theme select */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--card);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.app-title { font-weight: 600; }
+.theme-select { display: flex; align-items: center; }
+.theme-select label { margin-right: 8px; }
+.theme-select select { padding: 4px 8px; }
+
+/* Material component overrides using runtime variables so theme switching works without SASS theming */
+/* Card */
+.mat-mdc-card, mat-card, .mat-card {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+}
+
+/* Card content */
+.mat-mdc-card .mat-mdc-card-content, mat-card mat-card-content, .mat-card .mat-card-content {
+  color: var(--text) !important;
+}
+
+/* Toolbar / header */
+.mat-toolbar, .mat-mdc-top-app-bar, header.app-header {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+}
+
+/* Buttons */
+.mat-mdc-button, button.mat-button, .mat-button, .mat-mdc-button {
+  color: var(--text) !important;
+}
+.mat-mdc-button.mat-mdc-button--raised, .mat-button.mat-button--raised {
+  background-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+/* Form fields and selects */
+.mat-form-field, .mat-mdc-form-field, .mat-form-field-appearance-outline {
+  color: var(--text) !important;
+}
+.mat-mdc-select-panel, .mat-select-panel, .mat-mdc-option, .mat-option {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+}
+.mat-select-trigger, .mat-mdc-select-trigger {
+  color: var(--text) !important;
+}
+
+/* Paginator */
+.mat-paginator, .mat-mdc-paginator {
+  color: var(--text) !important;
+}
+
+/* Lists / grid items */
+.torrent-card, .torrent-card, .torrents-grid {
+  color: var(--text) !important;
+}
+
+/* Ensure menus/dialogs/panels use the card color */
+.mat-mdc-menu-panel, .mat-mdc-dialog-container {
+  background-color: var(--card) !important;
+  color: var(--text) !important;
+}
+
+/* Misc UI tweaks */
+a { color: var(--accent); }
+
+/* Fallback: force text color for most MDC elements */
+.mdc-typography, .mat-mdc-typography * {
+  color: var(--text) !important;
+}

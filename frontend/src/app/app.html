@@ -1,1 +1,12 @@
+<header class="app-header">
+  <div class="app-title">TorrentScrapper</div>
+  <div class="theme-select">
+    <label for="theme">Theme</label>
+    <select id="theme" (change)="onThemeChange($event)" [value]="theme()">
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </div>
+</header>
+
 <router-outlet />

@@ -2,6 +2,8 @@ using AngleSharp;
 using AngleSharp.Dom;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
+using System.Collections.Concurrent;
+using System.Linq;
 using TorrentScrapper.Application.Abstractions;
 using TorrentScrapper.Application.Contracts;
 
@@ -42,49 +44,71 @@ public class RutorParser : ITorrentParser
         var context = BrowsingContext.New(config);
         var document = await context.OpenAsync(req => req.Content(html), cancellationToken);
 
-        var results = new List<TorrentResultDto>();
+        // Preserve original order: index the links and store results by index using a ConcurrentDictionary
+        var torrentLinks = document.QuerySelectorAll(
+            "tr.gai td[colspan=\"2\"] a[href*='/torrent/'], tr.tum td[colspan=\"2\"] a[href*='/torrent/'], tr.gai td a[href*='/torrent/'], tr.tum td a[href*='/torrent/']");
 
-        var torrentLinks = document.QuerySelectorAll("a[href*='/torrent/']");
-        
-        foreach (var link in torrentLinks)
+        var indexedLinks = torrentLinks.Select((el, idx) => (Element: el, Index: idx)).ToList();
+        var resultsDict = new ConcurrentDictionary<int, TorrentResultDto>();
+
+        var parallelOptions = new ParallelOptions
         {
-            var href = link.GetAttribute("href");
-            if (string.IsNullOrEmpty(href) || !href.Contains("/torrent/"))
-                continue;
+            MaxDegreeOfParallelism = Environment.ProcessorCount,
+            CancellationToken = cancellationToken
+        };
 
-            var name = link.TextContent?.Trim();
-            if (string.IsNullOrEmpty(name))
-                continue;
-
-            var torrentPageUrl = href.StartsWith("http")
-                ? href
-                : $"https://rutor.info{href}";
-
-            // Fetch detail page to extract image
-            string? imageUrl = null;
+        await Parallel.ForEachAsync(indexedLinks, parallelOptions, async (item, ct) =>
+        {
+            var link = item.Element;
+            var idx = item.Index;
             try
             {
-                var detailHtml = await _detailClient.FetchDetailPageAsync(torrentPageUrl, cancellationToken);
+                var href = link.GetAttribute("href");
+                if (string.IsNullOrEmpty(href) || !href.Contains("/torrent/"))
+                    return;
+
+                var name = link.TextContent?.Trim();
+                if (string.IsNullOrEmpty(name))
+                    return;
+
+                var torrentPageUrl = href.StartsWith("http")
+                    ? href
+                    : $"https://rutor.info{href}";
+
+                // Fetch detail page to extract image
+                string? imageUrl = null;
+                var detailHtml = await _detailClient.FetchDetailPageAsync(torrentPageUrl, ct);
                 if (!string.IsNullOrEmpty(detailHtml))
                 {
-                    imageUrl = await _detailClient.ExtractImageUrlAsync(detailHtml, cancellationToken);
+                    imageUrl = await _detailClient.ExtractImageUrlAsync(detailHtml, ct);
                 }
 
-                // Rate limiting: wait before next request
-                await Task.Delay(RateLimitDelayMs, cancellationToken);
+                // Rate limiting per-task
+                await Task.Delay(RateLimitDelayMs, ct);
+
+                resultsDict.TryAdd(idx, new TorrentResultDto
+                {
+                    Name = name,
+                    TorrentPageUrl = torrentPageUrl,
+                    ImageUrl = imageUrl
+                });
+            }
+            catch (OperationCanceledException)
+            {
+                // Respect cancellation
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Failed to fetch image for torrent: {Name}", name);
+                _logger.LogWarning(ex, "Failed to fetch image for torrent entry while parsing page {Page}: {Message}", page, ex.Message);
             }
+        });
 
-            results.Add(new TorrentResultDto
-            {
-                Name = name,
-                TorrentPageUrl = torrentPageUrl,
-                ImageUrl = imageUrl
-            });
-        }
+        // Build ordered results by original index, skipping missing entries
+        var results = Enumerable.Range(0, indexedLinks.Count)
+            .Select(i => resultsDict.TryGetValue(i, out var r) ? r : null)
+            .Where(r => r != null)
+            .Select(r => r!)
+            .ToList();
 
         _logger.LogInformation("Parsed {Count} torrents from Rutor category {Category} page {Page}",
             results.Count, categoryUrl ?? "all", page);

@@ -1,0 +1,39 @@
+:root.theme-light {
+  --bg: #ffffff;
+  --text: #111827;
+  --card: #f8fafc;
+}
+
+:root.theme-dark {
+  --bg: #0b1220;
+  --text: #e6eef8;
+  --card: #081226;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: var(--card);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.app-title {
+  font-weight: 600;
+}
+
+.theme-select label {
+  margin-right: 8px;
+}
+
+.theme-select select {
+  padding: 4px 8px;
+}
