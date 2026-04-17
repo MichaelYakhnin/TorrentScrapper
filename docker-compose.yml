@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   backend:
@@ -6,6 +6,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: torrent-backend
+    restart: unless-stopped
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
@@ -19,6 +20,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: torrent-frontend
+    restart: unless-stopped
     ports:
       - "3000:80"
     depends_on:
