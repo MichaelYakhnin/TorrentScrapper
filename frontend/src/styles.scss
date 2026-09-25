@@ -28,6 +28,31 @@ body {
   font-family: Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* Card styling with rounded edges (circle corners) */
+.mat-mdc-card, mat-card, .mat-card {
+  border-radius: 24px !important;
+  overflow: hidden; /* Ensure images respect the rounded corners */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+/* Torrent card floating/hover effect */
+.torrent-card {
+  margin: 12px;
+  cursor: pointer;
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+}
+
+/* Card content - preserve rounded image display */
+.mat-mdc-card .mat-mdc-card-content {
+  border-radius: 0 0 24px 24px !important; /* Only bottom corners rounded */
+}
+
 /* App header and theme select */
 .app-header {
   display: flex;
@@ -54,6 +79,11 @@ body {
   color: var(--text) !important;
 }
 
+/* Card header - add rounded top corners */
+.mat-mdc-card .mat-mdc-card-header {
+  border-radius: 24px 24px 0 0 !important; /* Top corners only */
+}
+
 /* Toolbar / header */
 .mat-toolbar, .mat-mdc-top-app-bar, header.app-header {
   background-color: var(--card) !important;
@@ -70,15 +100,38 @@ body {
 }
 
 /* Form fields and selects */
-.mat-form-field, .mat-mdc-form-field, .mat-form-field-appearance-outline {
+.mat-form-field, .mat-mdc-form-field {
   color: var(--text) !important;
+  transition: box-shadow 0.3s ease;
 }
-.mat-mdc-select-panel, .mat-select-panel, .mat-mdc-option, .mat-option {
-  background-color: var(--card) !important;
-  color: var(--text) !important;
-}
+
+/* Select dropdown floating effect on hover */
 .mat-select-trigger, .mat-mdc-select-trigger {
-  color: var(--text) !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  background-color: var(--bg) !important;
+  
+  &:hover {
+    background-color: var(--card) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
+}
+
+/* Select panel floating animation */
+.mat-select-panel, .mat-mdc-select-panel {
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2) !important;
+  border-radius: 12px !important;
+  transition: all 0.3s ease;
+}
+
+.mat-select-trigger:hover, .mat-mdc-select-trigger:hover {
+  background-color: var(--primary) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Paginator */

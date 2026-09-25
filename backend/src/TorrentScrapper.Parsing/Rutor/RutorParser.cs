@@ -127,10 +127,10 @@ public class RutorParser : ITorrentParser
         if (!string.IsNullOrEmpty(categoryUrl))
         {
             // categoryUrl contains the category ID (e.g., "1", "4", "5", "6", "16")
-            return $"https://rutor.info/browse/{pageIndex}/{categoryUrl}/0/0";
+            return $"https://rutor.info/browse/{pageIndex}/{categoryUrl}/0/2";
         }
 
         // Default to category 0 (all) when no category specified
-        return $"https://rutor.info/browse/{pageIndex}/0/0/0";
+        return $"https://rutor.info/browse/{pageIndex}/0/0/2";
     }
 }
